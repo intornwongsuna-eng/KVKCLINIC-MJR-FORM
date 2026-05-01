@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบประเมินก่อนรับยา Mounjaro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0a7c6e; --teal2: #1aab99; --teal-light: #e8f5f3;
+  --navy: #0d2137; --gold: #c9973a; --red: #e05252;
+  --bg: #f0f4f7; --card: #fff; --border: #cde0dd;
+  --muted: #607d8b; --text: #1a2733; --r: 14px;
+}
+* {box-sizing: border-box; margin: 0; padding: 0;}
+body {font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh;}
+
+.banner {background: linear-gradient(135deg, #0d2137 0%, #0a7c6e 100%); padding: 36px 20px 32px; text-align: center; position: relative; overflow: hidden;}
+.banner-chip {display: inline-block; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); color: #7ef0e5; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 99px; margin-bottom: 14px;}
+.banner h1 {font-family: 'Noto Serif Thai', serif; font-size: clamp(19px, 5vw, 27px); color: #fff; font-weight: 700; margin-bottom: 6px;}
+.banner p {color: rgba(255,255,255,.65); font-size: 14px;}
+
+.prog-wrap {background: #fff; border-bottom: 1px solid var(--border); padding: 12px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; gap: 14px;}
+.prog-bar {flex: 1; height: 6px; background: #e0ecea; border-radius: 99px; overflow: hidden;}
+.prog-fill {height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal2)); border-radius: 99px; transition: width .4s;}
+.prog-label {font-size: 12px; color: var(--muted); font-weight: 600;}
+
+.steps-nav {display: flex; justify-content: center; gap: 6px; padding: 18px 20px 6px; flex-wrap: wrap;}
+.step-dot {width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); background: #fff; color: var(--muted); font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: all .2s;}
+.step-dot.done {background: var(--teal); border-color: var(--teal); color: #fff;}
+.step-dot.active {background: var(--navy); border-color: var(--navy); color: #fff; transform: scale(1.15);}
+
+.container {max-width: 680px; margin: 0 auto; padding: 16px 14px 60px;}
+.page {display: none;}
+.page.active {display: block; animation: fadeIn 0.4s ease;}
+@keyframes fadeIn {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
+
+.card {background: var(--card); border-radius: var(--r); border: 1px solid var(--border); margin-bottom: 16px; overflow: hidden;}
+.card-head {background: linear-gradient(90deg, var(--teal-light), #fff); padding: 14px 20px; border-bottom: 2px solid var(--teal); display: flex; align-items: center; gap: 10px;}
+.card-head .icon {width: 34px; height: 34px; background: var(--teal); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;}
+.card-head h2 {font-size: 15px; font-weight: 700; color: var(--navy);}
+.card-body {padding: 18px 20px;}
+
+.field {margin-bottom: 16px;}
+.field label {display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px;}
+.field label .req {color: var(--red); margin-left: 3px;}
+.field input[type="text"], .field input[type="date"], .field input[type="number"], .field input[type="tel"], .field input[type="email"], .field select, .field textarea {width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 13px; font-family: 'Sarabun', sans-serif; font-size: 15px; background: #fafcfc; outline: none; transition: all .15s;}
+.field input:focus, .field select:focus, .field textarea:focus {border-color: var(--teal); box-shadow: 0 0 0 3px rgba(10,124,110,.1); background: #fff;}
+.field textarea {resize: vertical; min-height: 80px;}
+
+.field input.error, .field select.error {border-color: var(--red); background: #fff5f5;}
+.error-msg {color: var(--red); font-size: 12px; margin-top: 4px; display: none;}
+.field input.error + .error-msg, .field select.error + .error-msg {display: block;}
+.radio-error-msg {color: var(--red); font-size: 12px; margin-top: 4px; display: none;}
+
+.field-grid {display: grid; gap: 12px;}
+.fg2 {grid-template-columns: 1fr 1fr;}
+.fg3 {grid-template-columns: 1fr 1fr 1fr;}
+@media(max-width:500px){.fg2, .fg3 {grid-template-columns: 1fr;}}
+
+.check-group {display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;}
+.check-item {display: flex; align-items: center; gap: 7px; background: #f5f8f8; border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 14px; cursor: pointer; transition: all .15s; font-size: 14px; user-select: none;}
+.check-item:hover {border-color: var(--teal); background: var(--teal-light);}
+.check-item input {display: none;}
+.check-item.selected {background: var(--teal-light); border-color: var(--teal); color: var(--teal); font-weight: 600;}
+.check-item.danger {border-color: #fecaca; background: #fff5f5;}
+.check-item.danger.selected {background: #fee2e2; border-color: var(--red); color: var(--red);}
+
+.alert {border-radius: 9px; padding: 12px 16px; font-size: 13.5px; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;}
+.alert-warn {background: #fff8e1; border: 1.5px solid #f59e0b; color: #7c5700;}
+.alert-icon {font-size: 18px; flex-shrink: 0;}
+
+.scale-wrap {display: flex; gap: 6px; justify-content: space-between; margin-top: 6px;}
+.scale-btn {flex: 1; height: 38px; border-radius: 7px; border: 1.5px solid var(--border); background: #f5f8f8; font-family: 'Sarabun', sans-serif; font-size: 14px; cursor: pointer; transition: all .15s;}
+.scale-btn:hover {border-color: var(--teal);}
+.scale-btn.selected {background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 700;}
+.scale-labels {display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px;}
+
+.nav-row {display: flex; gap: 10px; justify-content: space-between; margin-top: 22px;}
+.btn {display: inline-flex; align-items: center; gap: 7px; padding: 11px 24px; border-radius: 9px; border: none; font-family: 'Sarabun', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .15s;}
+.btn-p {background: var(--teal); color: #fff;}
+.btn-p:hover {background: #075e53; transform: translateY(-1px);}
+.btn-o {background: #fff; color: var(--teal); border: 1.5px solid var(--teal);}
+.btn-o:hover {background: var(--teal-light);}
+
+.success-page {text-align: center; padding: 48px 20px;}
+.success-icon {font-size: 64px; margin-bottom: 16px;}
+.success-page h2 {font-family: 'Noto Serif Thai', serif; font-size: 22px; color: var(--navy); margin-bottom: 8px;}
+.req-note {font-size: 12px; color: var(--muted); margin-bottom: 12px; text-align: right;}
+
+#loadingOverlay {display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; font-weight: 600; color: var(--teal);}
+.spinner {width: 40px; height: 40px; border: 4px solid var(--teal-light); border-top: 4px solid var(--teal); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px;}
+@keyframes spin {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  กำลังบันทึกข้อมูล...
+</div>
+
+<div class="banner">
+  <div class="banner-chip">💉 Mounjaro Clinic</div>
+  <h1>แบบประเมินผู้ป่วยก่อนรับยา Mounjaro</h1>
+  <p>กรอกข้อมูลให้ครบก่อนพบแพทย์ • ใช้เวลาประมาณ 5–8 นาที</p>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width: 14%;"></div></div>
+  <div class="prog-label" id="progText">1 / 7</div>
+</div>
+
+<div class="steps-nav">
+  <div class="step-dot active" id="dot1">1</div>
+  <div class="step-dot" id="dot2">2</div>
+  <div class="step-dot" id="dot3">3</div>
+  <div class="step-dot" id="dot4">4</div>
+  <div class="step-dot" id="dot5">5</div>
+  <div class="step-dot" id="dot6">6</div>
+  <div class="step-dot" id="dot7">7</div>
+</div>
+
+<div class="container">
+  <div class="req-note">* = จำเป็นต้องกรอก</div>
+
+  <form id="mounjaroForm">
+    <!-- PAGE 1: ข้อมูลส่วนตัว -->
+    <div class="page active" id="page1">
+      <div class="card">
+        <div class="card-head"><div class="icon">👤</div><h2>ข้อมูลส่วนตัว</h2></div>
+        <div class="card-body">
+          <div class="field-grid fg2">
+            <div class="field">
+              <label>ชื่อ <span class="req">*</span></label>
+              <input type="text" name="Name" placeholder="ชื่อจริง" required>
+              <div class="error-msg">กรุณากรอกชื่อ</div>
+            </div>
+            <div class="field">
+              <label>นามสกุล <span class="req">*</span></label>
+              <input type="text" name="Surname" placeholder="นามสกุล" required>
+              <div class="error-msg">กรุณากรอกนามสกุล</div>
+            </div>
+            <div class="field">
+              <label>วันเกิด <span class="req">*</span></label>
+              <input type="date" name="DOB" required>
+              <div class="error-msg">กรุณาเลือกวันเกิด</div>
+            </div>
+            <div class="field">
+              <label>อายุ (ปี)</label>
+              <input type="number" name="Age" placeholder="เช่น 35">
+            </div>
+          </div>
+          
+          <div class="field req-group" data-group="Gender">
+            <label>เพศ <span class="req">*</span></label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Gender" value="ชาย" required>ชาย</label>
+              <label class="check-item"><input type="radio" name="Gender" value="หญิง" required>หญิง</label>
+              <label class="check-item"><input type="radio" name="Gender" value="อื่นๆ" required>อื่นๆ</label>
+            </div>
+            <div class="radio-error-msg">กรุณาเลือกเพศ</div>
+          </div>
+
+          <div class="field-grid fg2">
+            <div class="field">
+              <label>เบอร์โทรศัพท์ <span class="req">*</span></label>
+              <input type="tel" name="Phone" placeholder="08XXXXXXXX" required pattern="[0-9]{9,10}">
+              <div class="error-msg">กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง</div>
+            </div>
+            <div class="field">
+              <label>อีเมล</label>
+              <input type="email" name="Email" placeholder="example@email.com">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>อาชีพ</label>
+            <select name="Occupation">
+              <option value="" disabled selected>เลือกอาชีพ</option>
+              <option value="พนักงานบริษัท">พนักงานบริษัท</option>
+              <option value="ธุรกิจส่วนตัว">ธุรกิจส่วนตัว</option>
+              <option value="ข้าราชการ/รัฐวิสาหกิจ">ข้าราชการ/รัฐวิสาหกิจ</option>
+              <option value="นักศึกษา">นักศึกษา</option>
+              <option value="อื่นๆ">อื่นๆ</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>วิธีที่รู้จักคลินิก</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Source" value="FACEBOOK / IG">FACEBOOK / IG</label>
+              <label class="check-item"><input type="checkbox" name="Source" value="เพื่อนแนะนำ">เพื่อนแนะนำ</label>
+              <label class="check-item"><input type="checkbox" name="Source" value="แพทย์ส่งต่อ">แพทย์ส่งต่อ</label>
+              <label class="check-item"><input type="checkbox" name="Source" value="GOOGLE">GOOGLE</label>
+              <label class="check-item"><input type="checkbox" name="Source" value="LINE">LINE</label>
+              <label class="check-item"><input type="checkbox" name="Source" value="อื่นๆ">อื่นๆ</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button type="button" class="btn btn-o" disabled>ย้อนกลับ</button>
+        <button type="button" class="btn btn-p" onclick="nextPage(1)">ถัดไป ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 2: ประวัติสุขภาพและโรคประจำตัว -->
+    <div class="page" id="page2">
+      <div class="card">
+        <div class="card-head"><div class="icon">🏥</div><h2>ประวัติสุขภาพและโรคประจำตัว</h2></div>
+        <div class="card-body">
+          <div class="field">
+            <label>โรคประจำตัว (เลือกได้หลายข้อ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Conditions" value="เบาหวาน T2DM">เบาหวาน T2DM</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="ความดันโลหิตสูง">ความดันโลหิตสูง</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="ไขมันในเลือดสูง">ไขมันในเลือดสูง</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="ไขมันพอกตับ">ไขมันพอกตับ</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="PCOS">PCOS</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="SLEEP APNEA">SLEEP APNEA</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="โรคหัวใจ">โรคหัวใจ</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="โรคไต">โรคไต</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="โรคตับ">โรคตับ</label>
+              <label class="check-item"><input type="checkbox" name="Conditions" value="ไม่มีโรคประจำตัว">ไม่มีโรคประจำตัว</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>โรคประจำตัวอื่นๆ (ระบุ)</label>
+            <input type="text" name="Other_Conditions">
+          </div>
+
+          <div class="alert alert-warn">
+            <span class="alert-icon">⚠️</span>
+            <div>
+              <strong>ข้อห้ามใช้ยา – กรุณาตอบตามจริง</strong><br>หากมีข้อใดข้างล่าง กรุณาแจ้งแพทย์ก่อนรับยา Mounjaro ทุกครั้ง
+            </div>
+          </div>
+
+          <div class="check-group" style="margin-bottom: 20px;">
+            <label class="check-item danger"><input type="checkbox" name="Contraindications" value="มะเร็งต่อมไทรอยด์ MTC / MEN2">มะเร็งต่อมไทรอยด์ MTC / MEN2</label>
+            <label class="check-item danger"><input type="checkbox" name="Contraindications" value="ตับอ่อนอักเสบเรื้อรัง">ตับอ่อนอักเสบเรื้อรัง</label>
+            <label class="check-item danger"><input type="checkbox" name="Contraindications" value="ตั้งครรภ์ / วางแผนมีบุตร">ตั้งครรภ์ / วางแผนมีบุตร</label>
+            <label class="check-item danger"><input type="checkbox" name="Contraindications" value="ไตเสื่อมรุนแรง (EGFR < 15)">ไตเสื่อมรุนแรง (EGFR < 15)</label>
+            <label class="check-item danger"><input type="checkbox" name="Contraindications" value="แพ้ TIRZEPATIDE">แพ้ TIRZEPATIDE</label>
+            <label class="check-item"><input type="checkbox" name="Contraindications" value="ไม่มีข้อห้ามใช้ยาดังกล่าว">ไม่มีข้อห้ามใช้ยาดังกล่าว</label>
+          </div>
+
+          <div class="field">
+            <label>ประวัติการผ่าตัด / เข้ารักษาในโรงพยาบาล</label>
+            <textarea name="Surgeries"></textarea>
+          </div>
+
+          <div class="field">
+            <label>ประวัติการแพ้ยา / แพ้อาหาร</label>
+            <textarea name="Allergies"></textarea>
+          </div>
+
+          <div class="field-grid fg2">
+            <div class="field">
+              <label>สูบบุหรี่</label>
+              <div class="check-group">
+                <label class="check-item"><input type="radio" name="Smoking" value="ไม่สูบ">ไม่สูบ</label>
+                <label class="check-item"><input type="radio" name="Smoking" value="เคยสูบ (เลิกแล้ว)">เคยสูบ (เลิกแล้ว)</label>
+                <label class="check-item"><input type="radio" name="Smoking" value="สูบอยู่">สูบอยู่</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>ดื่มแอลกอฮอล์</label>
+              <div class="check-group">
+                <label class="check-item"><input type="radio" name="Alcohol" value="ไม่ดื่ม">ไม่ดื่ม</label>
+                <label class="check-item"><input type="radio" name="Alcohol" value="นานๆ ครั้ง">นานๆ ครั้ง</label>
+                <label class="check-item"><input type="radio" name="Alcohol" value="1-2 ครั้ง/สัปดาห์">1-2 ครั้ง/สัปดาห์</label>
+                <label class="check-item"><input type="radio" name="Alcohol" value="ดื่มทุกวัน">ดื่มทุกวัน</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button type="button" class="btn btn-o" onclick="prevPage(2)">ย้อนกลับ</button>
+        <button type="button" class="btn btn-p" onclick="nextPage(2)">ถัดไป ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 3: น้ำหนัก ส่วนสูง และเป้าหมาย -->
+    <div class="page" id="page3">
+      <div class="card">
+        <div class="card-head"><div class="icon">⚖️</div><h2>น้ำหนัก ส่วนสูง และเป้าหมาย</h2></div>
+        <div class="card-body">
+          <div class="field-grid fg3">
+            <div class="field">
+              <label>น้ำหนักปัจจุบัน (KG) <span class="req">*</span></label>
+              <input type="number" name="Weight" step="0.1" min="20" required>
+              <div class="error-msg">กรุณากรอกน้ำหนัก</div>
+            </div>
+            <div class="field">
+              <label>ส่วนสูง (CM) <span class="req">*</span></label>
+              <input type="number" name="Height" step="0.1" min="50" required>
+              <div class="error-msg">กรุณากรอกส่วนสูง</div>
+            </div>
+            <div class="field">
+              <label>รอบเอว (CM)</label>
+              <input type="number" name="Waist" step="0.1">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>น้ำหนักที่อยากได้ (KG)</label>
+            <input type="number" name="Target_Weight" step="0.1" placeholder="ถ้ายังไม่แน่ใจ แพทย์จะช่วยกำหนดร่วมกันในวันนัด">
+          </div>
+
+          <div class="field">
+            <label>เคยลดน้ำหนักมาก่อนหรือไม่?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Weight_Loss_History" value="ไม่เคย">ไม่เคย</label>
+              <label class="check-item"><input type="checkbox" name="Weight_Loss_History" value="ควบคุมอาหาร">ควบคุมอาหาร</label>
+              <label class="check-item"><input type="checkbox" name="Weight_Loss_History" value="ออกกำลังกาย">ออกกำลังกาย</label>
+              <label class="check-item"><input type="checkbox" name="Weight_Loss_History" value="ยาลดน้ำหนัก">ยาลดน้ำหนัก</label>
+              <label class="check-item"><input type="checkbox" name="Weight_Loss_History" value="ผ่าตัด BARIATRIC">ผ่าตัด BARIATRIC</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>น้ำหนักสูงสุดที่เคยมี (KG)</label>
+            <input type="number" name="Max_Weight" step="0.1">
+          </div>
+
+          <div class="field">
+            <label>น้ำหนักตอนนี้ส่งผลต่อชีวิตประจำวันอย่างไร?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Impact" value="ปวดข้อเข่า / หลัง">ปวดข้อเข่า / หลัง</label>
+              <label class="check-item"><input type="checkbox" name="Impact" value="เหนื่อยง่าย">เหนื่อยง่าย</label>
+              <label class="check-item"><input type="checkbox" name="Impact" value="นอนกรน / หยุดหายใจ">นอนกรน / หยุดหายใจ</label>
+              <label class="check-item"><input type="checkbox" name="Impact" value="ผิวพรรณ / ฮอร์โมน">ผิวพรรณ / ฮอร์โมน</label>
+              <label class="check-item"><input type="checkbox" name="Impact" value="ความมั่นใจ">ความมั่นใจ</label>
+              <label class="check-item"><input type="checkbox" name="Impact" value="ไม่มีผลกระทบ">ไม่มีผลกระทบ</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button type="button" class="btn btn-o" onclick="prevPage(3)">ย้อนกลับ</button>
+        <button type="button" class="btn btn-p" onclick="nextPage(3)">ถัดไป ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 4: พฤติกรรมการกินอาหาร -->
+    <div class="page" id="page4">
+      <div class="card">
+        <div class="card-head"><div class="icon">🍽️</div><h2>พฤติกรรมการกินอาหาร (รายละเอียด)</h2></div>
+        <div class="card-body">
+          <div class="field">
+            <label>กินอาหารกี่มื้อต่อวัน?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Meals_Per_Day" value="1 มื้อ">1 มื้อ</label>
+              <label class="check-item"><input type="radio" name="Meals_Per_Day" value="2 มื้อ">2 มื้อ</label>
+              <label class="check-item"><input type="radio" name="Meals_Per_Day" value="3 มื้อ">3 มื้อ</label>
+              <label class="check-item"><input type="radio" name="Meals_Per_Day" value="4 มื้อขึ้นไป">4 มื้อขึ้นไป</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>เวลาที่กินอาหารมื้อแรก (BREAKFAST)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Breakfast" value="ก่อน 7.00 น.">ก่อน 7.00 น.</label>
+              <label class="check-item"><input type="radio" name="Breakfast" value="7.00-9.00 น.">7.00-9.00 น.</label>
+              <label class="check-item"><input type="radio" name="Breakfast" value="9.00-11.00 น.">9.00-11.00 น.</label>
+              <label class="check-item"><input type="radio" name="Breakfast" value="ไม่กินมื้อเช้าเลย">ไม่กินมื้อเช้าเลย</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>เวลาที่กินอาหารมื้อสุดท้าย</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Dinner" value="ก่อน 18.00 น.">ก่อน 18.00 น.</label>
+              <label class="check-item"><input type="radio" name="Dinner" value="18.00-20.00 น.">18.00-20.00 น.</label>
+              <label class="check-item"><input type="radio" name="Dinner" value="20.00-22.00 น.">20.00-22.00 น.</label>
+              <label class="check-item"><input type="radio" name="Dinner" value="หลัง 22.00 น.">หลัง 22.00 น.</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ปริมาณข้าว / แป้ง ต่อมื้อ</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Carbs" value="ไม่กินแป้งเลย / KETO">ไม่กินแป้งเลย / KETO</label>
+              <label class="check-item"><input type="radio" name="Carbs" value="น้อยมาก (1/4 ถ้วย)">น้อยมาก (1/4 ถ้วย)</label>
+              <label class="check-item"><input type="radio" name="Carbs" value="ปานกลาง (1/2-1 ถ้วย)">ปานกลาง (1/2-1 ถ้วย)</label>
+              <label class="check-item"><input type="radio" name="Carbs" value="มาก (1-2 ถ้วย)">มาก (1-2 ถ้วย)</label>
+              <label class="check-item"><input type="radio" name="Carbs" value="มากมาก (>2 ถ้วย)">มากมาก (>2 ถ้วย)</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ประเภทอาหารที่กินเป็นประจำ (เลือกได้หลายข้อ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="ข้าวสวย / ข้าวเหนียว">ข้าวสวย / ข้าวเหนียว</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="ก๋วยเตี๋ยว / เส้น">ก๋วยเตี๋ยว / เส้น</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="ขนมปัง / แซนวิช">ขนมปัง / แซนวิช</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="ของหวาน / ขนม">ของหวาน / ขนม</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="น้ำหวาน / ชาไข่มุก">น้ำหวาน / ชาไข่มุก</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="อาหารทอด / มัน">อาหารทอด / มัน</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="อาหาร DELIVERY บ่อย">อาหาร DELIVERY บ่อย</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="ผักสด / สลัด">ผักสด / สลัด</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="โปรตีน (ไข่ / เนื้อ / ปลา)">โปรตีน (ไข่ / เนื้อ / ปลา)</label>
+              <label class="check-item"><input type="checkbox" name="Food_Types" value="ผลไม้ (รสหวาน)">ผลไม้ (รสหวาน)</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>พฤติกรรมการกินที่มีบ่อย (เลือกได้หลายข้อ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="กินจุบจิบนอกมื้อ">กินจุบจิบนอกมื้อ</label>
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="กินเพราะเครียด / เบื่อ">กินเพราะเครียด / เบื่อ</label>
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="กินเร็ว / ไม่เคี้ยว">กินเร็ว / ไม่เคี้ยว</label>
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="กินดึก (หลัง 3 ทุ่ม)">กินดึก (หลัง 3 ทุ่ม)</label>
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="กินหมดจานเสมอ">กินหมดจานเสมอ</label>
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="ชอบอาหารรสจัด / เค็ม">ชอบอาหารรสจัด / เค็ม</label>
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="ดื่มน้ำอัดลม">ดื่มน้ำอัดลม</label>
+              <label class="check-item"><input type="checkbox" name="Eating_Habits" value="ไม่มีพฤติกรรมเหล่านี้">ไม่มีพฤติกรรมเหล่านี้</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ดื่มน้ำเปล่าต่อวัน</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Water" value="< 1 ลิตร">< 1 ลิตร</label>
+              <label class="check-item"><input type="radio" name="Water" value="1-2 ลิตร">1-2 ลิตร</label>
+              <label class="check-item"><input type="radio" name="Water" value="> 2 ลิตร">> 2 ลิตร</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>เคยลองรูปแบบการกินพิเศษหรือไม่? (เลือกได้หลายข้อ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Special_Diets" value="IF / INTERMITTENT FASTING">IF / INTERMITTENT FASTING</label>
+              <label class="check-item"><input type="checkbox" name="Special_Diets" value="KETO / LOW CARB">KETO / LOW CARB</label>
+              <label class="check-item"><input type="checkbox" name="Special_Diets" value="PLANT-BASED / มังสวิรัติ">PLANT-BASED / มังสวิรัติ</label>
+              <label class="check-item"><input type="checkbox" name="Special_Diets" value="นับแคลอรี">นับแคลอรี</label>
+              <label class="check-item"><input type="checkbox" name="Special_Diets" value="HIGH PROTEIN">HIGH PROTEIN</label>
+              <label class="check-item"><input type="checkbox" name="Special_Diets" value="ไม่เคยลองเลย">ไม่เคยลองเลย</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>อธิบายมื้ออาหารทั่วไปใน 1 วัน (เช้า กลางวัน เย็น)</label>
+            <textarea name="Meal_Desc" placeholder="ตัวอย่างนี้ช่วยให้แพทย์เข้าใจพฤติกรรมจริงๆ ของคุณได้ดีขึ้น"></textarea>
+          </div>
+
+          <div class="field">
+            <label>ปัจจุบันมีข้อจำกัดด้านอาหารหรือไม่?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Food_Restrictions" value="แพ้อาหารบางชนิด">แพ้อาหารบางชนิด</label>
+              <label class="check-item"><input type="checkbox" name="Food_Restrictions" value="ข้อจำกัดทางศาสนา">ข้อจำกัดทางศาสนา</label>
+              <label class="check-item"><input type="checkbox" name="Food_Restrictions" value="มังสวิรัติ / วีแกน">มังสวิรัติ / วีแกน</label>
+              <label class="check-item"><input type="checkbox" name="Food_Restrictions" value="ไม่ชอบผัก">ไม่ชอบผัก</label>
+              <label class="check-item"><input type="checkbox" name="Food_Restrictions" value="ไม่มีข้อจำกัด">ไม่มีข้อจำกัด</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button type="button" class="btn btn-o" onclick="prevPage(4)">ย้อนกลับ</button>
+        <button type="button" class="btn btn-p" onclick="nextPage(4)">ถัดไป ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 5: การออกกำลังกายและกิจกรรมทางกาย -->
+    <div class="page" id="page5">
+      <div class="card">
+        <div class="card-head"><div class="icon">🏃</div><h2>การออกกำลังกายและกิจกรรมทางกาย</h2></div>
+        <div class="card-body">
+          <div class="field">
+            <label>ระดับกิจกรรมในชีวิตประจำวัน</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Activity_Level" value="นั่งโต๊ะตลอดวัน (SEDENTARY)">นั่งโต๊ะตลอดวัน</label>
+              <label class="check-item"><input type="radio" name="Activity_Level" value="นั่งเป็นหลัก เดินบ้าง">นั่งเป็นหลัก เดินบ้าง</label>
+              <label class="check-item"><input type="radio" name="Activity_Level" value="ยืน / เดินมาก">ยืน / เดินมาก</label>
+              <label class="check-item"><input type="radio" name="Activity_Level" value="ใช้แรงกายเป็นหลัก">ใช้แรงกายเป็นหลัก</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ความถี่ในการออกกำลังกาย (ปัจจุบัน)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Ex_Frequency" value="ไม่ออกเลย">ไม่ออกเลย</label>
+              <label class="check-item"><input type="radio" name="Ex_Frequency" value="1-2 ครั้ง / สัปดาห์">1-2 ครั้ง / สัปดาห์</label>
+              <label class="check-item"><input type="radio" name="Ex_Frequency" value="3-4 ครั้ง / สัปดาห์">3-4 ครั้ง / สัปดาห์</label>
+              <label class="check-item"><input type="radio" name="Ex_Frequency" value="5-6 ครั้ง / สัปดาห์">5-6 ครั้ง / สัปดาห์</label>
+              <label class="check-item"><input type="radio" name="Ex_Frequency" value="ทุกวัน">ทุกวัน</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ระยะเวลาออกกำลังกายต่อครั้ง</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Ex_Duration" value="< 20 นาที">< 20 นาที</label>
+              <label class="check-item"><input type="radio" name="Ex_Duration" value="20-30 นาที">20-30 นาที</label>
+              <label class="check-item"><input type="radio" name="Ex_Duration" value="30-60 นาที">30-60 นาที</label>
+              <label class="check-item"><input type="radio" name="Ex_Duration" value="> 60 นาที">> 60 นาที</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ประเภทการออกกำลังกายที่ทำเป็นประจำ (เลือกได้หลายข้อ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="เดิน / JOGGING">เดิน / JOGGING</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="วิ่ง">วิ่ง</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="ปั่นจักรยาน">ปั่นจักรยาน</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="ว่ายน้ำ">ว่ายน้ำ</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="ยกน้ำหนัก / GYM">ยกน้ำหนัก / GYM</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="โยคะ / พิลาทิส">โยคะ / พิลาทิส</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="เต้น / ZUMBA">เต้น / ZUMBA</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="กีฬาทีม">กีฬาทีม</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="ออกกำลังกายที่บ้าน / YOUTUBE">บ้าน / YOUTUBE</label>
+              <label class="check-item"><input type="checkbox" name="Ex_Types" value="ไม่ออกกำลังกาย">ไม่ออกกำลังกาย</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ระดับความหนักของการออกกำลังกาย</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Ex_Intensity" value="เบามาก (เดินช้า)">เบามาก (เดินช้า)</label>
+              <label class="check-item"><input type="radio" name="Ex_Intensity" value="เบา-ปานกลาง (เหนื่อยนิดหน่อย)">เบา-ปานกลาง</label>
+              <label class="check-item"><input type="radio" name="Ex_Intensity" value="ปานกลาง (หัวใจเต้นเร็ว)">ปานกลาง (หัวใจเต้นเร็ว)</label>
+              <label class="check-item"><input type="radio" name="Ex_Intensity" value="หนักมาก (เหนื่อยมาก / HIIT)">หนักมาก (HIIT)</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>อุปสรรคที่ทำให้ออกกำลังกายไม่ได้ (เลือกได้หลายข้อ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Barriers" value="ไม่มีเวลา">ไม่มีเวลา</label>
+              <label class="check-item"><input type="checkbox" name="Barriers" value="เจ็บปวด / ปัญหาข้อเข่า / หลัง">เจ็บปวดข้อเข่า/หลัง</label>
+              <label class="check-item"><input type="checkbox" name="Barriers" value="เหนื่อยง่าย / หอบ">เหนื่อยง่าย / หอบ</label>
+              <label class="check-item"><input type="checkbox" name="Barriers" value="ไม่มีสถานที่ / ค่าใช้จ่าย">ไม่มีสถานที่/เงิน</label>
+              <label class="check-item"><input type="checkbox" name="Barriers" value="ขาดแรงจูงใจ">ขาดแรงจูงใจ</label>
+              <label class="check-item"><input type="checkbox" name="Barriers" value="อากาศร้อน">อากาศร้อน</label>
+              <label class="check-item"><input type="checkbox" name="Barriers" value="ไม่มีอุปสรรค ออกได้ปกติ">ไม่มีอุปสรรค</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>จำนวนก้าวเดินเฉลี่ยต่อวัน (ถ้าทราบ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Steps" value="ไม่ทราบ / ไม่ได้วัด">ไม่ทราบ / ไม่ได้วัด</label>
+              <label class="check-item"><input type="radio" name="Steps" value="< 3,000 ก้าว">< 3,000 ก้าว</label>
+              <label class="check-item"><input type="radio" name="Steps" value="3,000-6,000 ก้าว">3,000-6,000 ก้าว</label>
+              <label class="check-item"><input type="radio" name="Steps" value="6,000-10,000 ก้าว">6,000-10,000 ก้าว</label>
+              <label class="check-item"><input type="radio" name="Steps" value="> 10,000 ก้าว">> 10,000 ก้าว</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ถ้าจะเริ่มออกกำลังกายจริงจัง รูปแบบไหนที่สนใจ?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Exercise_Interest" value="เดิน / วิ่ง">เดิน / วิ่ง</label>
+              <label class="check-item"><input type="checkbox" name="Exercise_Interest" value="GYM / ยกน้ำหนัก">GYM / ยกน้ำหนัก</label>
+              <label class="check-item"><input type="checkbox" name="Exercise_Interest" value="ว่ายน้ำ">ว่ายน้ำ</label>
+              <label class="check-item"><input type="checkbox" name="Exercise_Interest" value="โยคะ / PILATES">โยคะ / PILATES</label>
+              <label class="check-item"><input type="checkbox" name="Exercise_Interest" value="ออกกำลังกายที่บ้าน">ออกกำลังกายที่บ้าน</label>
+              <label class="check-item"><input type="checkbox" name="Exercise_Interest" value="เล่นกีฬา">เล่นกีฬา</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>นอนหลับเฉลี่ยกี่ชั่วโมง?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Sleep" value="< 5 ชม.">< 5 ชม.</label>
+              <label class="check-item"><input type="radio" name="Sleep" value="5-6 ชม.">5-6 ชม.</label>
+              <label class="check-item"><input type="radio" name="Sleep" value="7-8 ชม.">7-8 ชม.</label>
+              <label class="check-item"><input type="radio" name="Sleep" value="> 8 ชม.">> 8 ชม.</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ระดับความเครียด (1 = ต่ำมาก, 10 = สูงมาก)</label>
+            <div class="scale-wrap" id="stressScale">
+              <button type="button" class="scale-btn">1</button><button type="button" class="scale-btn">2</button>
+              <button type="button" class="scale-btn">3</button><button type="button" class="scale-btn">4</button>
+              <button type="button" class="scale-btn">5</button><button type="button" class="scale-btn">6</button>
+              <button type="button" class="scale-btn">7</button><button type="button" class="scale-btn">8</button>
+              <button type="button" class="scale-btn">9</button><button type="button" class="scale-btn">10</button>
+            </div>
+            <div class="scale-labels"><span>ต่ำมาก</span><span>สูงมาก</span></div>
+            <input type="hidden" name="Stress">
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button type="button" class="btn btn-o" onclick="prevPage(5)">ย้อนกลับ</button>
+        <button type="button" class="btn btn-p" onclick="nextPage(5)">ถัดไป ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 6: ยาที่ใช้อยู่ปัจจุบัน -->
+    <div class="page" id="page6">
+      <div class="card">
+        <div class="card-head"><div class="icon">💊</div><h2>ยาที่ใช้อยู่ปัจจุบัน</h2></div>
+        <div class="card-body">
+          <div class="field">
+            <label>ยาประจำที่ใช้อยู่ (เลือกได้หลายข้อ)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Meds" value="METFORMIN">METFORMIN</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="INSULIN">INSULIN</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="SULFONYLUREA">SULFONYLUREA</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="SGLT2I">SGLT2I</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="GLP-1 อื่นๆ">GLP-1 อื่นๆ</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="ยาความดัน">ยาความดัน</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="STATIN">STATIN</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="ยาไทรอยด์">ยาไทรอยด์</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="ยาคุมกำเนิด">ยาคุมกำเนิด</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="ยาลดน้ำหนักอื่น">ยาลดน้ำหนักอื่น</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="WARFARIN">WARFARIN</label>
+              <label class="check-item"><input type="checkbox" name="Meds" value="ไม่มียาประจำ">ไม่มียาประจำ</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ยา / อาหารเสริม / สมุนไพรอื่นๆ (ระบุ)</label>
+            <textarea name="Other_Meds"></textarea>
+          </div>
+
+          <div class="field">
+            <label>เคยใช้ยา GLP-1 / GIP มาก่อนหรือไม่?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Past_GLP1" value="ไม่เคย">ไม่เคย</label>
+              <label class="check-item"><input type="radio" name="Past_GLP1" value="OZEMPIC / SEMAGLUTIDE">OZEMPIC / SEMAGLUTIDE</label>
+              <label class="check-item"><input type="radio" name="Past_GLP1" value="VICTOZA / LIRAGLUTIDE">VICTOZA / LIRAGLUTIDE</label>
+              <label class="check-item"><input type="radio" name="Past_GLP1" value="MOUNJARO (ก่อนหน้า)">MOUNJARO (ก่อนหน้า)</label>
+              <label class="check-item"><input type="radio" name="Past_GLP1" value="อื่นๆ">อื่นๆ</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ผลลัพธ์จากยา GLP-1 / GIP ก่อนหน้า (ถ้าเคย)</label>
+            <textarea name="GLP1_Results"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button type="button" class="btn btn-o" onclick="prevPage(6)">ย้อนกลับ</button>
+        <button type="button" class="btn btn-p" onclick="nextPage(6)">ถัดไป ➔</button>
+      </div>
+    </div>
+
+    <!-- PAGE 7: ความคาดหวังและข้อมูลเพิ่มเติม -->
+    <div class="page" id="page7">
+      <div class="card">
+        <div class="card-head"><div class="icon">🎯</div><h2>ความคาดหวังและข้อมูลเพิ่มเติม</h2></div>
+        <div class="card-body">
+          <div class="field">
+            <label>เหตุผลหลักที่ต้องการลดน้ำหนัก</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="Reason" value="สุขภาพโดยรวม">สุขภาพโดยรวม</label>
+              <label class="check-item"><input type="checkbox" name="Reason" value="ควบคุมเบาหวาน / ความดัน">ควบคุมเบาหวาน / ความดัน</label>
+              <label class="check-item"><input type="checkbox" name="Reason" value="รูปร่าง / บุคลิกภาพ">รูปร่าง / บุคลิกภาพ</label>
+              <label class="check-item"><input type="checkbox" name="Reason" value="เตรียมตั้งครรภ์">เตรียมตั้งครรภ์</label>
+              <label class="check-item"><input type="checkbox" name="Reason" value="ลดอาการปวดข้อ">ลดอาการปวดข้อ</label>
+              <label class="check-item"><input type="checkbox" name="Reason" value="พลังงาน / คุณภาพชีวิต">พลังงาน / คุณภาพชีวิต</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>คาดหวังจะลดน้ำหนักใน 3 เดือนแรก (%)</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Expected_Loss" value="< 5%">< 5%</label>
+              <label class="check-item"><input type="radio" name="Expected_Loss" value="5-10%">5-10%</label>
+              <label class="check-item"><input type="radio" name="Expected_Loss" value="10-15%">10-15%</label>
+              <label class="check-item"><input type="radio" name="Expected_Loss" value="> 15%">> 15%</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ความพร้อมในการเปลี่ยนพฤติกรรม (1-10)</label>
+            <div class="scale-wrap" id="readyScale">
+              <button type="button" class="scale-btn">1</button><button type="button" class="scale-btn">2</button>
+              <button type="button" class="scale-btn">3</button><button type="button" class="scale-btn">4</button>
+              <button type="button" class="scale-btn">5</button><button type="button" class="scale-btn">6</button>
+              <button type="button" class="scale-btn">7</button><button type="button" class="scale-btn">8</button>
+              <button type="button" class="scale-btn">9</button><button type="button" class="scale-btn">10</button>
+            </div>
+            <div class="scale-labels"><span>ยังไม่พร้อม</span><span>พร้อมมาก</span></div>
+            <input type="hidden" name="Readiness">
+          </div>
+
+          <div class="field">
+            <label>วันที่ / เวลา ที่สะดวกนัดหมาย</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Appointment" value="จันทร์-ศุกร์ เช้า">จันทร์-ศุกร์ เช้า</label>
+              <label class="check-item"><input type="radio" name="Appointment" value="จันทร์-ศุกร์ เย็น">จันทร์-ศุกร์ เย็น</label>
+              <label class="check-item"><input type="radio" name="Appointment" value="เสาร์ - อาทิตย์">เสาร์ - อาทิตย์</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>คำถาม / สิ่งที่อยากให้แพทย์ทราบ</label>
+            <textarea name="Questions"></textarea>
+          </div>
+
+          <div class="field">
+            <label>ยินยอมรับข้อมูลข่าวสาร / นัดหมายผ่าน LINE / SMS?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="Consent" value="ยินยอม">ยินยอม</label>
+              <label class="check-item"><input type="radio" name="Consent" value="ไม่ยินยอม">ไม่ยินยอม</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button type="button" class="btn btn-o" onclick="prevPage(7)">ย้อนกลับ</button>
+        <button type="button" class="btn btn-p" onclick="submitToGoogleSheet()">ตรวจสอบข้อมูลก่อนส่ง ✓</button>
+      </div>
+      <p style="text-align: center; font-size: 13px; color: var(--muted); margin-top: 10px;">ข้อมูลของท่านถูกส่งอย่างปลอดภัยและใช้เพื่อการรักษาเท่านั้น</p>
+    </div>
+
+    <!-- PAGE 8: SUCCESS -->
+    <div class="page" id="page8">
+      <div class="card success-page">
+        <div class="success-icon">✅</div>
+        <h2>ส่งข้อมูลเรียบร้อยแล้ว!</h2>
+        <p>ขอบคุณค่ะ ทีมงานคลินิกได้รับข้อมูลของท่านแล้ว<br>เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันวันนัดหมายภายใน 24 ชั่วโมง</p>
+        <div style="background: var(--bg); padding: 16px; border-radius: 8px; margin-top: 20px; text-align: left;">
+          <strong style="color: var(--teal); font-size: 15px;">ขั้นตอนถัดไป</strong>
+          <ul style="color: var(--text); font-size: 14px; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            <li>รอรับสายหรือข้อความยืนยันนัด</li>
+            <li>งดอาหาร 8 ชั่วโมงก่อนนัด (สำหรับตรวจเลือด)</li>
+            <li>เตรียมรายการยาที่ใช้อยู่มาด้วย</li>
+            <li>พักผ่อนให้เพียงพอก่อนวันนัด</li>
+          </ul>
+        </div>
+        <button type="button" class="btn btn-o" style="margin-top: 24px;" onclick="window.print()">พิมพ์สำเนาข้อมูล</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  const totalPages = 7;
+  
+  // URL ของ Google Apps Script (เปลี่ยนตรงนี้ด้วยลิงก์ที่คุณได้มา)
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAf4gMFKh1hdBVUgepazvmqo5bjdXpo7JFKZvd0P880pB-y82oaouUsEVi6JXwwfC53w/exec';
+
+  function updateProgress(step) {
+    const fill = document.getElementById('progFill');
+    document.getElementById('progText').innerText = step + ' / ' + totalPages;
+    fill.style.width = Math.round((step / totalPages) * 100) + '%';
+    for(let i = 1; i <= totalPages; i++) {
+      let dot = document.getElementById('dot' + i);
+      if(dot) {
+        dot.className = 'step-dot';
+        if(i < step) dot.classList.add('done');
+        else if(i === step) dot.classList.add('active');
+      }
+    }
+  }
+
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+    document.getElementById('page' + pageId).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function validatePage(pageId) {
+    const page = document.getElementById('page' + pageId);
+    if (!page) return true;
+    
+    let isValid = true;
+    const requiredInputs = page.querySelectorAll('input[required], select[required]');
+    
+    requiredInputs.forEach(input => {
+      if (input.type === 'radio') {
+        const name = input.name;
+        const radios = page.querySelectorAll(`input[name="${name}"]`);
+        let isChecked = false;
+        radios.forEach(r => { if(r.checked) isChecked = true; });
+        
+        const errorMsg = page.querySelector(`.req-group[data-group="${name}"] .radio-error-msg`);
+        if (!isChecked) {
+          if(errorMsg) errorMsg.style.display = 'block';
+          isValid = false;
+        } else {
+          if(errorMsg) errorMsg.style.display = 'none';
+        }
+      } else {
+        if (!input.checkValidity() || input.value.trim() === '') {
+          input.classList.add('error');
+          isValid = false;
+        } else {
+          input.classList.remove('error');
+        }
+      }
+    });
+
+    if (!isValid) alert("กรุณากรอกข้อมูลที่จำเป็น (*) ให้ครบถ้วนก่อนไปหน้าถัดไป");
+    
+    requiredInputs.forEach(input => {
+      if (input.type !== 'radio') {
+        input.addEventListener('input', function() {
+          if(this.checkValidity() && this.value.trim() !== '') this.classList.remove('error');
+        });
+      }
+    });
+
+    return isValid;
+  }
+
+  function nextPage(current) {
+    if (!validatePage(current)) return;
+    if(current < totalPages) {
+      showPage(current + 1);
+      updateProgress(current + 1);
+    }
+  }
+
+  function prevPage(current) {
+    if(current > 1) {
+      showPage(current - 1);
+      updateProgress(current - 1);
+    }
+  }
+
+  // จัดการ UI ของ Radio / Checkbox
+  document.querySelectorAll('.check-item input[type="checkbox"]').forEach(input => {
+    input.addEventListener('change', function() {
+      if(this.checked) this.parentElement.classList.add('selected');
+      else this.parentElement.classList.remove('selected');
+    });
+  });
+
+  document.querySelectorAll('.check-item input[type="radio"]').forEach(input => {
+    input.addEventListener('change', function() {
+      let name = this.getAttribute('name');
+      document.querySelectorAll(`.check-item input[name="${name}"]`).forEach(radio => {
+        radio.parentElement.classList.remove('selected');
+      });
+      if(this.checked) {
+        this.parentElement.classList.add('selected');
+        const errorGroup = this.closest('.req-group');
+        if(errorGroup) {
+          const errMsg = errorGroup.querySelector('.radio-error-msg');
+          if(errMsg) errMsg.style.display = 'none';
+        }
+      }
+    });
+  });
+
+  // จัดการ Scale 1-10
+  function setupScale(scaleId, inputName) {
+    const wrap = document.getElementById(scaleId);
+    if(!wrap) return;
+    const btns = wrap.querySelectorAll('.scale-btn');
+    btns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        btns.forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        document.querySelector(`input[name="${inputName}"]`).value = this.innerText;
+      });
+    });
+  }
+  setupScale('stressScale', 'Stress');
+  setupScale('readyScale', 'Readiness');
+
+  // ฟังก์ชันจัดกลุ่มข้อมูลฟอร์ม และส่งเข้า Google Sheets แบบทะลุ CORS
+  function submitToGoogleSheet() {
+    if (!validatePage(7)) return;
+
+    const form = document.getElementById('mounjaroForm');
+    const formData = new FormData(form);
+    
+    // รวมค่า Checkbox ที่มีชื่อซ้ำกันให้เป็น String คั่นด้วยลูกน้ำ
+    const dataObj = {};
+    for (let [key, value] of formData.entries()) {
+      if (dataObj[key]) {
+        dataObj[key] += ', ' + value;
+      } else {
+        dataObj[key] = value;
+      }
+    }
+
+    const encodedData = new URLSearchParams(dataObj).toString();
+    document.getElementById('loadingOverlay').style.display = 'flex';
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // คำสั่งสำหรับทะลุการบล็อก CORS
+      body: encodedData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(() => {
+      // โค้ดจะเข้ามาทำงานตรงนี้เมื่อส่งสำเร็จ (ถึงแม้โหมด no-cors จะไม่อ่าน response ก็ตาม)
+      document.getElementById('loadingOverlay').style.display = 'none';
+      document.querySelector('.prog-wrap').style.display = 'none';
+      document.querySelector('.steps-nav').style.display = 'none';
+      showPage(8);
+    })
+    .catch(error => {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+      console.error('Error!', error);
+    });
+  }
+</script>
+</body>
+</html>
